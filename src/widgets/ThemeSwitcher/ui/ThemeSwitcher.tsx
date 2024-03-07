@@ -1,5 +1,5 @@
 import classes from './ThemeSwitcher.module.scss';
-import {classNames} from "shared/lib/classNames";
+import {classNames} from "shared/lib/classNames/classNames";
 import {UseTheme} from "app/provides/ThemeProvider";
 import {Button, ThemeButton} from "shared/ui/Button/Button";
 

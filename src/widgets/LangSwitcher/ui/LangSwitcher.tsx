@@ -1,5 +1,5 @@
 import {useTranslation} from "react-i18next";
-import {classNames} from "shared/lib/classNames";
+import {classNames} from "shared/lib/classNames/classNames";
 import classes from './LangSwither.module.scss';
 import {Button, ThemeButton} from "shared/ui/Button/Button";
 
