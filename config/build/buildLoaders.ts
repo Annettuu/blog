@@ -1,38 +1,49 @@
-import webpack from "webpack";
-import MiniCssExtractPlugin from "mini-css-extract-plugin";
-import {BuildOptions} from "./types/config";
+import webpack from 'webpack';
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import { BuildOptions } from './types/config';
 
-export function buildLoaders(options: BuildOptions):webpack.RuleSetRule[] {
-
+export function buildLoaders({ isDev }: BuildOptions): webpack.RuleSetRule[] {
     const svgLoader = {
-        test: /\.svg$./,
+        test: /\.svg$/,
         use: ['@svgr/webpack'],
-    }
+    };
 
-    const  cssLoader = {
+    const babelLoader = {
+        test: /\.(js|jsx|tsx)$/,
+        exclude: /node_modules/,
+        use: {
+            loader: 'babel-loader',
+            options: {
+                presets: ['@babel/preset-env'],
+            },
+        },
+    };
+
+    const cssLoader = {
         test: /\.s[ac]ss$/i,
         use: [
-            options.isDev ? "style-loader" : MiniCssExtractPlugin.loader,
+            isDev ? 'style-loader' : MiniCssExtractPlugin.loader,
             {
-                loader: "css-loader",
+                loader: 'css-loader',
                 options: {
                     modules: {
                         auto: (resPath: string) => Boolean(resPath.includes('.module.')),
-                        localIdentName: options.isDev
+                        localIdentName: isDev
                             ? '[path][name]__[local]--[hash:base64:5]'
-                            : '[hash:base64:8]'
-                    }
-                }
+                            : '[hash:base64:8]',
+                    },
+                },
             },
-            "sass-loader"
-        ]
-    }
+            'sass-loader',
+        ],
+    };
 
-    const typescriptsLoaders = {
+    // Если не используем тайпскрипт - нужен babel-loader
+    const typescriptLoader = {
         test: /\.tsx?$/,
         use: 'ts-loader',
         exclude: /node_modules/,
-    }
+    };
 
     const fileLoader = {
         test: /\.(png|jpe?g|gif|woff2|woff)$/i,
@@ -41,18 +52,13 @@ export function buildLoaders(options: BuildOptions):webpack.RuleSetRule[] {
                 loader: 'file-loader',
             },
         ],
-    }
+    };
 
-    const babelLoader = {
-        test: /\.(js|jsx|ts|tsx)$/,
-        exclude: /node_modules/,
-        use: {
-            loader: "babel-loader",
-            options: {
-                presets: ['@babel/preset-env']
-            }
-        }
-    }
-
-    return [ typescriptsLoaders, cssLoader, svgLoader, fileLoader, babelLoader ]
+    return [
+        fileLoader,
+        svgLoader,
+        babelLoader,
+        typescriptLoader,
+        cssLoader,
+    ];
 }
